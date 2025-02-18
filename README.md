@@ -10,9 +10,9 @@ In the current moment app works only on **macOS**, but will soon be available fo
 1. [Features](#features)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [Future updates](#future updates)
+4. [Updates](#updates)
 5. [License](#license)
-6. Sources
+6. [Sources](#sources)
 
 ## Features
 
@@ -110,7 +110,7 @@ Here is a closer look of Icon GUI:
   
 ![path](readme_images/searchRun.png)
 
-# Future updates
+# Updates
 
 ### Tree View:
 - Implementation for **Delete** option for *Files*.
