@@ -1,0 +1,36 @@
+//
+// Created by Filip Radovic on 11.2.25..
+//
+
+#ifndef DRAGGABLEICON_H
+#define DRAGGABLEICON_H
+
+#include <string>
+#include <GL/glew.h>
+#include "TreeNode.h"
+
+class DraggableIcon {
+public:
+    DraggableIcon(float x, float y, std::string& name);
+
+    void LoadTexture(const char* path);
+    void loadTextureBasedOnFile(TreeNode& node);
+    static void setIconSize(float width, float height);
+    static float getWidth();
+    static float getHeight();
+    bool renderIconWithName(bool render);
+
+private:
+    bool renderImageButton();
+
+    static int statID;
+    std::string iconId;
+    float x, y;
+    std::string name, truncatedName;
+    static float width, height;
+    GLuint iconTextureID;
+};
+
+
+
+#endif //DRAGGABLEICON_H

@@ -1,0 +1,31 @@
+# CLion project files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# CMake build directories
+/cmake-build-debug/
+/cmake-build-release/
+
+# Build artifacts (object files, executables, libraries)
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+*.a
+*.lib
+*.dylib
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
