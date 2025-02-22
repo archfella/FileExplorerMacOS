@@ -91,23 +91,52 @@ std::string TreeViewWindow::chooseIconBasedOnExtension(const std::string &filena
     return iconCode;
 }
 
+static bool deletePopup = false;
+
+void RenderDeleteConformationPrompt(TreeNode& toDelete) {
+    if (deletePopup) {
+        ImGui::OpenPopup("File Delete Confirmation");
+        deletePopup = false;
+    }
+    if (ImGui::BeginPopupModal("File Delete Confirmation", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("Are you sure you want to delete this file?");
+        ImGui::Spacing();
+
+        // Calculate centering offset
+        float windowWidth = ImGui::GetWindowSize().x;
+        float buttonWidth = 120.0f * 2 + ImGui::GetStyle().ItemSpacing.x; // Two buttons + spacing
+        float offsetX = (windowWidth - buttonWidth) * 0.5f;
+
+        ImGui::SetCursorPosX(offsetX);
+        if (ImGui::Button("Yes", ImVec2(120, 0))) {
+            FileTree::deleteFile(toDelete);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
+
 void TreeViewWindow::popupWindowNode(TreeNode &node) {
     if (ImGui::BeginPopup("TreeNodePopup")) {
         if (ImGui::MenuItem(ICON_PLAY "Run")) {
             FileTree::openFile(node.getPathString());
         }
         if (ImGui::MenuItem(ICON_COPY "Copy")) {
-            // copiedNode = node;
-            // copy_source_path = node.getPathString();
             FileTree::copyNodeSelection(node);
         }
         if (ImGui::MenuItem(ICON_PASTE "Paste")) {
-            //copyFile(node);
             FileTree::copyFile(node);
         }
         if (ImGui::MenuItem(ICON_DELETE "Delete")) {
-            //todo
+            deletePopup = true;
         }
+
         ImGui::EndPopup();
     }
 }
@@ -142,6 +171,7 @@ void TreeViewWindow::RenderDescendants(TreeNode &root) {
                     std::cout << "Popup!" << std::endl;
                 }
                 popupWindowNode(rootChild);
+                RenderDeleteConformationPrompt(rootChild);
 
                 if(ImGui::IsItemClicked()){
                     rootChild.open();

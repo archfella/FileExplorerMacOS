@@ -13,6 +13,8 @@
 #include <imgui.h>
 #include <filesystem>
 
+#include "../h/IconViewWindow.h"
+
 float DraggableIcon::width = 0, DraggableIcon::height = 0;
 int DraggableIcon::statID = 0;
 
@@ -103,6 +105,8 @@ std::string getFileExtension(const std::string &filename) {
 std::string loadTextureBasedOnExtension(const std::string& filename) {
     std::string fileExtension = getFileExtension(filename);
 
+    std::string themePrefix = IconViewWindow::getIconPath();
+
     std::string iconPath = TEX_FILE;
     if (fileExtension == "rar" || fileExtension == "zip") {
         iconPath = TEX_RAR;
@@ -123,16 +127,18 @@ std::string loadTextureBasedOnExtension(const std::string& filename) {
         iconPath = TEX_JSON;
     }
 
-    return iconPath;
+    return themePrefix + iconPath;
 }
 
 void DraggableIcon::loadTextureBasedOnFile(TreeNode &node) {
     std::string iconPath;
     std::string filename = node.getName();
 
+    std::string themePrefix = IconViewWindow::getIconPath();
+
     try {
-        if (node.isDirectory()) iconPath = TEX_FOLDER;
-        else if (filename[0] == '.') iconPath = TEX_HIDDEN;
+        if (node.isDirectory()) iconPath = themePrefix + TEX_FOLDER;
+        else if (filename[0] == '.') iconPath = themePrefix + TEX_HIDDEN;
         else iconPath = loadTextureBasedOnExtension(filename);
 
     } catch (const std::filesystem::filesystem_error& e) {

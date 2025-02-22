@@ -19,12 +19,13 @@ public:
 
     // filesystem indexing
     static void populateFileMap();
+    static bool getFilesystemIndexStatus();
 
     // file manipulation
     static void copyNodeSelection(const TreeNode& node);
     static void copyFile(TreeNode& dest);
     static void openFile(const std::string& filePath);
-    static void deleteFile(const std::string& filePath);
+    static void deleteFile(TreeNode& toDelete);
 
     // getters
     static TreeNode& getRoot();
@@ -34,12 +35,10 @@ private:
     static FileTree* instance;
     FileTree() = default;
 
-    static void writeIndexPopulateMap();
-    static void readIndexPopulateMap();
-
     inline static std::unordered_map<std::string, std::vector<std::filesystem::path>> file_map;
     static TreeNode copiedNode;
     static TreeNode root;
+    static bool filesystemIndexed;
 };
 
 

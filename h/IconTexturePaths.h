@@ -5,14 +5,14 @@
 #ifndef ICONTEXTUREPATHS_H
 #define ICONTEXTUREPATHS_H
 
-#define TEX_FOLDER "../textures/icons/folder.png"
-#define TEX_HIDDEN "../textures/icons/hidden_folder.png"
-#define TEX_RAR "../textures/icons/rar.png"
-#define TEX_EXE  "../textures/icons/exe.png"
-#define TEX_TXT "../textures/icons/txt.png"
-#define TEX_IMAGE "../textures/icons/image.png"
-#define TEX_PDF "../textures/icons/pdf.png"
-#define TEX_JSON "../textures/icons/json.png"
-#define TEX_FILE "../textures/icons/file.png"
+#define TEX_FOLDER "folder.png"
+#define TEX_HIDDEN "hidden_folder.png"
+#define TEX_RAR "rar.png"
+#define TEX_EXE  "exe.png"
+#define TEX_TXT "txt.png"
+#define TEX_IMAGE "image.png"
+#define TEX_PDF "pdf.png"
+#define TEX_JSON "json.png"
+#define TEX_FILE "file.png"
 
 #endif //ICONTEXTUREPATHS_H

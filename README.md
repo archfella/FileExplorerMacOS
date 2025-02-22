@@ -112,23 +112,19 @@ Here is a closer look of Icon GUI:
 
 # Updates
 
-### Tree View:
-- Implementation for **Delete** option for *Files*.
-- *Directory* manipulation (run, delete, copy, paste).
+### Tree View
 
-### Icon View:
+### Icon View
 - Display of the *current path*.
 - *Drag and drop* file manipulation.
 
-### Search View:
+### Search View
 - *File manipulation* for file path output (run, delete).
 
 ### Backend
-- **Synchronization** of filesystem *cache state* (needed for searching).
 - **Cross-platform** support.
 
 ### Style
-- **Dark theme.**
 
 # License
 
@@ -138,4 +134,27 @@ Here is a closer look of Icon GUI:
 
 * **Icons** used for Icon View window (./textures/icons) are downloaded for free from: https://www.flaticon.com
 * **Icon-font** used for Tree View window (./fonts/OpenFontIcons.ttf) is downloaded from this GitHub repo: https://github.com/traverseda/OpenFontIcons
+
+# Patch Notes 22.2.2025.
+
+- **Dark theme**
+  
+![darkTheme](readme_images/darkTheme.png)
+
+- **Loading screen**
+  
+![loading](readme_images/loading.png)
+
+- **Theme choice**
+
+![choice](readme_images/choice.png)
+
+- Implementation for **Delete** option for *Files*.
+  
+![confirm](readme_images/confirm.png)
+
+![confirm2](readme_images/confirm2.png)
+
+- **Synchronization** of filesystem *cache state* (needed for searching).
+
 

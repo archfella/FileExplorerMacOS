@@ -11,6 +11,7 @@
 TreeNode FileTree::root;
 FileTree* FileTree::instance = nullptr;
 TreeNode FileTree::copiedNode;
+bool FileTree::filesystemIndexed = false;
 
 FileTree *FileTree::getInstance() {
     if (instance == nullptr) {
@@ -24,7 +25,8 @@ void FileTree::setRoot(const TreeNode& root) {
 }
 
 
-void FileTree::writeIndexPopulateMap() {
+void FileTree::populateFileMap() {
+
     auto start = std::chrono::high_resolution_clock::now();
 
     try {
@@ -50,14 +52,10 @@ void FileTree::writeIndexPopulateMap() {
             outFile << entry.path().filename().string() << "," << entry.path() << "\n";
             //outFile.flush();
             //}
-            std::cout << "Count: " << ++count << std::endl;
+            std::cout << "File Count: " << ++count << std::endl;
         }
         outFile.close();
 
-        /*Signal that the filesystem cashing is complete.*/
-        static std::ofstream indexed("indexed.txt");
-        indexed << count << std::endl;
-        indexed.close();
 
     }catch (const std::filesystem::filesystem_error& e) {
         std::cerr << "Error accessing entry: " << e.what() << std::endl;
@@ -69,59 +67,13 @@ void FileTree::writeIndexPopulateMap() {
     // Calculate the elapsed time
     std::chrono::duration<double> elapsed = end - start;
 
+    filesystemIndexed = true;
+
     std::cout << "Filesystem indexed: " << elapsed.count() << "s" << std::endl;
 }
 
-void FileTree::readIndexPopulateMap() {
-
-    std::ifstream indexInput("index.txt");
-    if (!indexInput) {
-        std::cerr << "Failed to open index.txt" << std::endl;
-        exit(1);
-    }
-
-    long long count = 0;
-    std::string line;
-    while (std::getline(indexInput, line)) {
-        std::istringstream lineStream(line); // Create a stringstream for splitting
-        std::string key, value;
-
-        // Split the line by the delimiter ','
-        if (std::getline(lineStream, key, ',') && std::getline(lineStream, value, ',')) {
-            auto start = std::chrono::high_resolution_clock::now();
-            file_map[key].emplace_back(value); // Insert the key-value pair into the hash map
-            count++;
-            std::cout << count << std::endl;
-            auto end = std::chrono::high_resolution_clock::now();
-
-            // Calculate the elapsed time
-            std::chrono::duration<double> elapsed = end - start;
-
-            std::cout << "Hashmap accessed: " << elapsed.count() << "s" << std::endl;
-        } else {
-            std::cerr << "Skipping malformed line: " << line << std::endl;
-        }
-    }
-
-
-
-    indexInput.close();
-}
-
-void FileTree::populateFileMap() {
-    std::ifstream indexed("indexed.txt");
-    if(!indexed){
-        writeIndexPopulateMap();
-
-        std::ofstream createFile("indexed.txt");
-        if(!createFile) {
-            std::cerr << "Error creating an indexed.txt file!" << std::endl;
-        }
-
-    }else{
-        readIndexPopulateMap();
-        std::cout << "Map populated!" << std::endl;
-    }
+bool FileTree::getFilesystemIndexStatus() {
+    return filesystemIndexed;
 }
 
 void FileTree::copyNodeSelection(const TreeNode& node) {
@@ -155,8 +107,33 @@ void FileTree::openFile(const std::string &filePath) {
     system(command.c_str());
 }
 
-void FileTree::deleteFile(const std::string &filePath) {
-    // todo
+void FileTree::deleteFile(TreeNode& toDelete) {
+    fs::path fileToDelete = toDelete.getPathString();
+
+    try {
+        // Check if the file exists
+        if (fs::exists(fileToDelete)) {
+            // Attempt to delete the file
+            if (fs::remove(fileToDelete)) {
+                TreeNode* parent = toDelete.getParent();
+                auto& siblings = parent->getChildren();
+
+                // Use std::remove to shift the elements that are not equal to nodeToRemove
+                auto newEnd = std::remove(siblings.begin(), siblings.end(), toDelete);
+
+                // Erase the "removed" elements from the vector
+                siblings.erase(newEnd, siblings.end());
+
+                std::cout << "File deleted successfully.\n";
+            } else {
+                std::cout << "File could not be deleted.\n";
+            }
+        } else {
+            std::cout << "File does not exist.\n";
+        }
+    } catch (const fs::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << '\n';
+    }
 }
 
 TreeNode &FileTree::getRoot() {

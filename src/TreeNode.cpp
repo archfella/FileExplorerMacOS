@@ -42,6 +42,7 @@ void TreeNode::init() {
 
                 std::cout << dir_entry.path().string() << std::endl;
                 TreeNode child(dir_entry);
+                child.parent = this; // possible memory leak
                 children.push_back(child);
             }
 
@@ -109,6 +110,15 @@ bool TreeNode::direntExists() const {
 bool TreeNode::childrenExist() const {
     return !children.empty();
 }
+
+TreeNode *TreeNode::getParent() {
+    return parent;
+}
+
+bool TreeNode::operator==(const TreeNode &other) const {
+    return dirent == other.dirent;
+}
+
 
 
 

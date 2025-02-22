@@ -15,6 +15,8 @@ class TreeNode {
 public:
     TreeNode();
     ~TreeNode();
+
+    bool operator==(const TreeNode& other) const;
     explicit TreeNode(const std::filesystem::directory_entry& dirent);
 
     /*Initializes the TreeNode structure.*/
@@ -35,6 +37,8 @@ public:
     bool isIconInitialized();
     void setIcon(DraggableIcon* icon);
     DraggableIcon* getIcon();
+    TreeNode* getParent();
+
 
     // other
     void addChild(const TreeNode& child);
@@ -49,6 +53,7 @@ private:
     std::vector<TreeNode> children;
     fs::directory_entry dirent;
     DraggableIcon* icon;
+    TreeNode* parent;
 };
 
 

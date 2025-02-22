@@ -22,7 +22,11 @@ add_executable(FileExplorerMacOS main.cpp
         h/IconViewWindow.h
         src/DraggableIcon.cpp
         h/DraggableIcon.h
-        h/IconTexturePaths.h)
+        h/IconTexturePaths.h
+        src/LoadingWindow.cpp
+        h/LoadingWindow.h
+        src/ThemePrompt.cpp
+        h/ThemePrompt.h)
 
 # Defines the 'imgui' library.
 add_library(imgui STATIC
