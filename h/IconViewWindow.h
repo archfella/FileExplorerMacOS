@@ -19,8 +19,8 @@ public:
     static void showIconViewWindow();
     static void setDarkTheme();
     static void setLightTheme();
-    static void RenderThemeButton();
     static std::string& getIconPath();
+    static void displayCurrentPath();
 
 private:
     IconViewWindow() = default;
@@ -38,6 +38,8 @@ private:
     static bool goBack;
     static std::string iconPath;
     static bool lightTheme;
+    static std::string currentPath;
+    static std::vector<std::string> prevPaths;
 };
 
 

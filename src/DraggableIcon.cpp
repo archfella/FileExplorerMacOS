@@ -13,10 +13,12 @@
 #include <imgui.h>
 #include <filesystem>
 
+#include "../h/FileTree.h"
 #include "../h/IconViewWindow.h"
 
 float DraggableIcon::width = 0, DraggableIcon::height = 0;
 int DraggableIcon::statID = 0;
+bool DraggableIcon::fileOpened = false;
 
 std::string truncateString(const std::string& str) {
     if (str.length() > 10) {
@@ -26,7 +28,7 @@ std::string truncateString(const std::string& str) {
 }
 
 
-DraggableIcon::DraggableIcon(float x, float y, std::string &name) : x(x), y(y), name(name)  {
+DraggableIcon::DraggableIcon(float x, float y, std::string &name, TreeNode& node) : x(x), y(y), name(name), node(node)  {
     iconId = "button#"  + std::to_string(statID++);
     truncatedName = truncateString(name);
 }
@@ -67,6 +69,15 @@ void DraggableIcon::LoadTexture(const char *path) {
 
 }
 
+
+bool DraggableIcon::isFileOpened() {
+    return fileOpened;
+}
+
+bool DraggableIcon::setFileOpenedStatus(bool status) {
+    fileOpened = status;
+}
+
 bool DraggableIcon::renderImageButton() {
     bool clicked = false;
 
@@ -78,6 +89,10 @@ bool DraggableIcon::renderImageButton() {
 
     if (ImGui::ImageButton(iconId.c_str(), iconTextureID, ImVec2(width, height))) {
         clicked = true;
+        if (!node.isDirectory()) {
+            FileTree::openFile(node.getPathString());
+            fileOpened = true;
+        }
     }
 
     ImGui::PopStyleColor();

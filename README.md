@@ -157,4 +157,16 @@ Here is a closer look of Icon GUI:
 
 - **Synchronization** of filesystem *cache state* (needed for searching).
 
+# Patch Notes 6.3.2025.
+
+- **Running a File in Icon View**
+  * By clicking on a File icon, the file will run in the default program for that file type.
+
+
+- **Current path display**
+  
+![pathLight](readme_images/pathDark.png)
+![pathDark](readme_images/pathLight.png)
+
+
 

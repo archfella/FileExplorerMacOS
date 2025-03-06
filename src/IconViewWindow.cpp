@@ -18,6 +18,8 @@ std::stack<TreeNode*> IconViewWindow::nodeStack;
 bool IconViewWindow::goBack = false;
 std::string IconViewWindow::iconPath;
 bool IconViewWindow::lightTheme = true;
+std::string IconViewWindow::currentPath = "/Users/";
+std::vector<std::string> IconViewWindow::prevPaths;
 
 void IconViewWindow::BeginRender() {
     ImGui::PushFont(iconFont);
@@ -151,7 +153,6 @@ void IconViewWindow::setLightTheme() {
     lightTheme = true;
 }
 
-
 GLuint LoadTexture(const char *path) {
     int width, height, channels;
     unsigned char* data = stbi_load(path, &width, &height, &channels, 4);
@@ -207,9 +208,17 @@ void IconViewWindow::RenderBackButton() {
     ImGui::PopID();
 }
 
+void IconViewWindow::displayCurrentPath() {
+    ImGui::SetCursorPos(ImVec2(65, 37));
+    ImGui::Text(currentPath.c_str());
+}
+
+
 void IconViewWindow::RenderChildrenIcons() {
 
     if (goBack) {
+        currentPath = prevPaths.back();
+        prevPaths.pop_back();
         goBack = false;
         nodeStack.pop();
         if (nodeStack.empty()) return;
@@ -232,16 +241,22 @@ void IconViewWindow::RenderChildrenIcons() {
         std::string fullName = child.getName();
 
         if (!child.isIconInitialized()) {
-            auto childIcon = new DraggableIcon(x, y, fullName);
+            auto childIcon = new DraggableIcon(x, y, fullName, child);
             childIcon->loadTextureBasedOnFile(child);
             child.setIcon(childIcon);
         }
 
         childIconClicked = child.getIcon()->renderIconWithName(!childIconClicked);
+        if (DraggableIcon::isFileOpened()) {
+            DraggableIcon::setFileOpenedStatus(false);
+            childIconClicked = false;
+        }
 
         if (childIconClicked) {
             nodeStack.push(&child);
             childIconClicked = false;
+            prevPaths.push_back(parent->getPathString());
+            currentPath = child.getPathString();
             RenderChildrenIcons();
         }
 
@@ -260,7 +275,7 @@ void IconViewWindow::initRootIcon(TreeNode& root) {
     DraggableIcon::setIconSize(80, 80);
 
     std::string rootName = "Users";
-    auto rootIcon = new DraggableIcon(0 ,30, rootName);
+    auto rootIcon = new DraggableIcon(0 ,30, rootName, root);
     std::string folderIconPath = iconPath + "folder.png";
     rootIcon->LoadTexture(folderIconPath.c_str());
     root.setIcon(rootIcon);
@@ -276,6 +291,8 @@ void IconViewWindow::Render() {
     TreeNode& root = FileTree::getRoot();
 
     static bool clicked = false;
+
+    displayCurrentPath();
 
     if (!root.isIconInitialized()) initRootIcon(root);
 

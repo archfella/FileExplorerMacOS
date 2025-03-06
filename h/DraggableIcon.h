@@ -11,7 +11,7 @@
 
 class DraggableIcon {
 public:
-    DraggableIcon(float x, float y, std::string& name);
+    DraggableIcon(float x, float y, std::string& name, TreeNode& node);
 
     void LoadTexture(const char* path);
     void loadTextureBasedOnFile(TreeNode& node);
@@ -19,9 +19,12 @@ public:
     static float getWidth();
     static float getHeight();
     bool renderIconWithName(bool render);
+    static bool isFileOpened();
+    static bool setFileOpenedStatus(bool status);
 
 private:
     bool renderImageButton();
+    static bool fileOpened;
 
     static int statID;
     std::string iconId;
@@ -29,6 +32,7 @@ private:
     std::string name, truncatedName;
     static float width, height;
     GLuint iconTextureID;
+    TreeNode& node;
 };
 
 

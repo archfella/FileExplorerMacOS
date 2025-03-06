@@ -24,7 +24,7 @@ TreeViewWindow *TreeViewWindow::getInstance() {
 
 void TreeViewWindow::BeginRender() {
     ImGui::PushFont(iconFont);
-    ImGui::Begin(ICON_ZAP "File Explorer", nullptr, ImGuiWindowFlags_NoCollapse);
+    ImGui::Begin(ICON_ZAP "Tree View", nullptr, ImGuiWindowFlags_NoCollapse);
 }
 
 void TreeViewWindow::EndRender() {
