@@ -6,20 +6,19 @@
 #define THEMEPROMP_H
 
 
-
 class ThemePrompt {
 public:
     ThemePrompt(const ThemePrompt&) = delete;
     ThemePrompt& operator=(const ThemePrompt&) = delete;
 
-    // window rendering and search logic
+    // Window rendering and search logic.
     static void showThemePrompt();
     static bool getThemeChosenStatus();
 
 private:
     ThemePrompt() = default;
 
-    // rendering
+    // Rendering.
     static void RenderPrompt();
     static bool themeChosen;
 

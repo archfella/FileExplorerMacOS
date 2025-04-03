@@ -9,8 +9,6 @@
 #include "../vendor/stb_image/stb_image.h"
 
 #include <iostream>
-#include <sstream>
-
 
 
 ImFont* IconViewWindow::iconFont = nullptr;
@@ -18,7 +16,7 @@ std::stack<TreeNode*> IconViewWindow::nodeStack;
 bool IconViewWindow::goBack = false;
 std::string IconViewWindow::iconPath;
 bool IconViewWindow::lightTheme = true;
-std::string IconViewWindow::currentPath = "/Users/";
+std::string IconViewWindow::currentPath = "/Users";
 std::vector<std::string> IconViewWindow::prevPaths;
 
 void IconViewWindow::BeginRender() {
@@ -29,6 +27,185 @@ void IconViewWindow::BeginRender() {
 void IconViewWindow::EndRender() {
     ImGui::End();
     ImGui::PopFont();
+}
+
+GLuint LoadTexture(const char *path) {
+    int width, height, channels;
+    unsigned char* data = stbi_load(path, &width, &height, &channels, 4);
+
+    if (!data) {
+        std::cerr << "Failed to load texture: " << path << std::endl;
+    }
+
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(data);
+
+    return textureID;
+
+}
+
+void IconViewWindow::RenderBackButton() {
+    static GLuint texId = -1;
+    static bool initialized = false;
+    if (!initialized) {
+        std::string backPath = iconPath + "back.png";
+        texId = LoadTexture(backPath.c_str());
+        initialized = true;
+    }
+
+    // Use PushID to create a unique ID for the button
+    ImGui::PushID("back_button");
+
+    ImGui::SetCursorPos(ImVec2(20, 30));
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.42f, 0.42f, 0.42f, 0.67f));
+    // Create the ImageButton with a fixed ID, texId, and size
+    if (ImGui::ImageButton("back_button", texId, ImVec2(30, 30))) {
+        goBack = true;
+    }
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar();
+    ImGui::PopStyleVar();
+
+    // Pop the ID after the button is created
+    ImGui::PopID();
+}
+
+void IconViewWindow::displayCurrentPath() {
+    // Sets the cursor to the position of the current path and renders it.
+    ImGui::SetCursorPos(ImVec2(65, 37));
+    ImGui::Text(currentPath.c_str());
+}
+
+void MoveCursor(float& x, float& y) {
+    // The cursor is moved to the starting position of the next icon.
+    ImVec2 windowSize = ImGui::GetWindowSize();
+    x += DraggableIcon::getWidth() * 2;
+    if (x >= windowSize.x - DraggableIcon::getWidth()) {
+        x = 0;
+        y += DraggableIcon::getHeight() * 2;
+    }
+}
+
+void IconViewWindow::RenderChildrenIcons() {
+    // If the user clicked the 'BackButton', the top of the 'nodeStack' is popped and 'prevPaths' is updated.
+    if (goBack) {
+        currentPath = prevPaths.back();
+        prevPaths.pop_back();
+        goBack = false;
+        nodeStack.pop();
+        if (nodeStack.empty()) return;
+    }
+
+    TreeNode* parent = nodeStack.top();
+
+    static bool childIconClicked = false;
+
+    // TreeNode initialization.
+    if(!parent->getInitializedStatus()) {
+        parent->init();
+        parent->setInitializedStatus(true);
+    }
+
+    // Children initialization and rendering.
+    auto& children = parent->getChildren();
+    float x = 0, y = 30;
+
+    for (auto& child : children) {
+        std::string fullName = child.getName();
+
+        // Child icon initialization.
+        if (!child.isIconInitialized()) {
+            auto childIcon = new DraggableIcon(x, y, fullName, child);
+            childIcon->loadTextureBasedOnFile(child);
+            child.setIcon(childIcon);
+        }
+
+        /* Child icon rendering and click-event listening. */
+        // This also sets the 'DraggableIcon::isFileOpened()' status if the node that is opened is a file.
+        childIconClicked = child.getIcon()->renderIconWithName(!childIconClicked);
+
+        // If the node that is opened is a file, no changes to the rendering are made.
+        if (DraggableIcon::isFileOpened()) {
+            DraggableIcon::setFileOpenedStatus(false);
+            childIconClicked = false;
+        }
+
+        // If the node that is opened is a directory, we render the sub-nodes of the clicked node.
+        if (childIconClicked) {
+            nodeStack.push(&child);
+            childIconClicked = false;
+
+            // We push the path of the parent node to the 'prevPaths' list.
+            prevPaths.push_back(parent->getPathString());
+            currentPath = child.getPathString();
+        }
+
+        MoveCursor(x, y);
+    }
+}
+
+void IconViewWindow::initRootIcon(TreeNode& root) {
+    // Initialize the icon class.
+    DraggableIcon::setIconSize(80, 80);
+
+    // Initialize the root icon and load its texture.
+    std::string rootName = "Users";
+    auto rootIcon = new DraggableIcon(0 ,30, rootName, root);
+    std::string folderIconPath = iconPath + "folder.png";
+    rootIcon->LoadTexture(folderIconPath.c_str());
+    root.setIcon(rootIcon);
+}
+
+std::string &IconViewWindow::getIconPath() {
+    return iconPath;
+}
+
+
+void IconViewWindow::Render() {
+    /* Main rendering logic:
+     * - The 'root' node is rendered by itself. If it is clicked, it is pushed onto the 'nodeStack'.
+     * - The top of the 'nodeStack' is the node whose sub-nodes will be rendered. */
+    TreeNode& root = FileTree::getRoot();
+
+    static bool clicked = false;
+
+    displayCurrentPath();
+
+    if (!root.isIconInitialized()) initRootIcon(root);
+
+    // If the 'nodeStack' is empty, we render the root icon by itself.
+    if (nodeStack.empty()) clicked = root.getIcon()->renderIconWithName(!clicked);
+    // If the 'nodeStack' is not empty, we render the sub-nodes of the top node.
+    else RenderChildrenIcons();
+
+    // If the root icon is clicked, we push it onto the 'nodeStack'.
+    if (clicked) {
+        nodeStack.push(&root);
+        prevPaths.emplace_back("/Users");
+        clicked = false;
+    };
+}
+
+
+void IconViewWindow::showIconViewWindow() {
+    BeginRender();
+    Render();
+    RenderBackButton();
+    EndRender();
 }
 
 void IconViewWindow::setDarkTheme() {
@@ -47,8 +224,6 @@ void IconViewWindow::setDarkTheme() {
     colors[ImGuiCol_TabSelected]            = ImVec4(0.36f, 0.36f, 0.36f, 1.00f);
     colors[ImGuiCol_TitleBgActive]          = ImVec4(0.03f, 0.03f, 0.03f, 1.00f);
     colors[ImGuiCol_ButtonHovered]          = ImVec4(0.21f, 0.21f, 0.21f, 1.00f);
-
-
 
     // Frame
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(11, 5));
@@ -151,166 +326,6 @@ void IconViewWindow::setLightTheme() {
 
     iconPath = "../textures/icons/black/";
     lightTheme = true;
-}
-
-GLuint LoadTexture(const char *path) {
-    int width, height, channels;
-    unsigned char* data = stbi_load(path, &width, &height, &channels, 4);
-
-    if (!data) {
-        std::cerr << "Failed to load texture: " << path << std::endl;
-    }
-
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_image_free(data);
-
-    return textureID;
-
-}
-
-void IconViewWindow::RenderBackButton() {
-    static GLuint texId = -1;
-    static bool initialized = false;
-    if (!initialized) {
-        std::string backPath = iconPath + "back.png";
-        texId = LoadTexture(backPath.c_str());
-        initialized = true;
-    }
-
-    // Use PushID to create a unique ID for the button
-    ImGui::PushID("back_button");
-
-    ImGui::SetCursorPos(ImVec2(20, 30));
-
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.42f, 0.42f, 0.42f, 0.67f));
-    // Create the ImageButton with a fixed ID, texId, and size
-    if (ImGui::ImageButton("back_button", texId, ImVec2(30, 30))) {
-        goBack = true;
-    }
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleVar();
-    ImGui::PopStyleVar();
-
-    // Pop the ID after the button is created
-    ImGui::PopID();
-}
-
-void IconViewWindow::displayCurrentPath() {
-    ImGui::SetCursorPos(ImVec2(65, 37));
-    ImGui::Text(currentPath.c_str());
-}
-
-
-void IconViewWindow::RenderChildrenIcons() {
-
-    if (goBack) {
-        currentPath = prevPaths.back();
-        prevPaths.pop_back();
-        goBack = false;
-        nodeStack.pop();
-        if (nodeStack.empty()) return;
-    }
-    TreeNode* parent = nodeStack.top();
-
-    static bool childIconClicked = false;
-
-    // TreeNode initialization
-    if(!parent->getInitializedStatus()) {
-        parent->init();
-        parent->setInitializedStatus(true);
-    }
-
-    auto& children = parent->getChildren();
-    float x = 0, y = 30;
-
-
-    for (auto& child : children) {
-        std::string fullName = child.getName();
-
-        if (!child.isIconInitialized()) {
-            auto childIcon = new DraggableIcon(x, y, fullName, child);
-            childIcon->loadTextureBasedOnFile(child);
-            child.setIcon(childIcon);
-        }
-
-        childIconClicked = child.getIcon()->renderIconWithName(!childIconClicked);
-        if (DraggableIcon::isFileOpened()) {
-            DraggableIcon::setFileOpenedStatus(false);
-            childIconClicked = false;
-        }
-
-        if (childIconClicked) {
-            nodeStack.push(&child);
-            childIconClicked = false;
-            prevPaths.push_back(parent->getPathString());
-            currentPath = child.getPathString();
-            RenderChildrenIcons();
-        }
-
-        ImVec2 windowSize = ImGui::GetWindowSize();
-        x += DraggableIcon::getWidth() * 2;
-        if (x >= windowSize.x - DraggableIcon::getWidth()) {
-            x = 0;
-            y += DraggableIcon::getHeight() * 2;
-        }
-
-    }
-}
-
-void IconViewWindow::initRootIcon(TreeNode& root) {
-    // initialize the icon class
-    DraggableIcon::setIconSize(80, 80);
-
-    std::string rootName = "Users";
-    auto rootIcon = new DraggableIcon(0 ,30, rootName, root);
-    std::string folderIconPath = iconPath + "folder.png";
-    rootIcon->LoadTexture(folderIconPath.c_str());
-    root.setIcon(rootIcon);
-}
-
-std::string &IconViewWindow::getIconPath() {
-    return iconPath;
-}
-
-
-void IconViewWindow::Render() {
-
-    TreeNode& root = FileTree::getRoot();
-
-    static bool clicked = false;
-
-    displayCurrentPath();
-
-    if (!root.isIconInitialized()) initRootIcon(root);
-
-    if (nodeStack.empty()) clicked = root.getIcon()->renderIconWithName(!clicked);
-    else RenderChildrenIcons();
-
-    if (clicked) {
-        nodeStack.push(&root);
-        clicked = false;
-    };
-}
-
-
-void IconViewWindow::showIconViewWindow() {
-    BeginRender();
-    Render();
-    RenderBackButton();
-    EndRender();
 }
 
 

@@ -5,13 +5,9 @@
 #include "../h/TreeNode.h"
 #include <iostream>
 
-TreeNode::TreeNode() : iconInitialized(false), isOpened(false), initialized(false), icon(nullptr) {}
+TreeNode::TreeNode() : iconInitialized(false), isOpened(false), initialized(false), icon(nullptr), parent(nullptr) {}
 
-TreeNode::TreeNode(const std::filesystem::directory_entry &dirent) : iconInitialized(false), isOpened(false), initialized(false), dirent(dirent), icon(nullptr) {}
-
-TreeNode::~TreeNode() {
-    // todo delete icon;
-}
+TreeNode::TreeNode(const std::filesystem::directory_entry &dirent) : iconInitialized(false), isOpened(false), initialized(false), dirent(dirent), icon(nullptr), parent(nullptr) {}
 
 void TreeNode::initializeIcon() {
     iconInitialized = true;
@@ -22,11 +18,11 @@ void TreeNode::setIcon(DraggableIcon* icon) {
     initializeIcon();
 }
 
-bool TreeNode::isIconInitialized() {
+bool TreeNode::isIconInitialized() const {
     return iconInitialized;
 }
 
-DraggableIcon *TreeNode::getIcon() {
+DraggableIcon *TreeNode::getIcon() const {
     return icon;
 }
 
@@ -111,7 +107,7 @@ bool TreeNode::childrenExist() const {
     return !children.empty();
 }
 
-TreeNode *TreeNode::getParent() {
+TreeNode *TreeNode::getParent() const {
     return parent;
 }
 

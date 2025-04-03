@@ -15,19 +15,19 @@ public:
     SearchWindow(const SearchWindow&) = delete;
     SearchWindow& operator=(const SearchWindow&) = delete;
 
-    // singleton instancing
+    // Singleton instancing
     static SearchWindow* getInstance();;
 
-    // fonts
+    // Fonts
     static void setIconFont(ImFont* iconFont);
 
-    // window rendering and search logic
+    // Window rendering and search logic
     static void showSearchWindow();
 
 private:
     SearchWindow() = default;
 
-    // rendering
+    // Rendering
     static void BeginRender();
     static void EndRender();
     static void RenderSearchLogic();

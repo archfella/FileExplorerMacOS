@@ -36,64 +36,90 @@ void SearchWindow::setIconFont(ImFont *iconFont) {
 }
 
 void SearchWindow::popupWindowSelectable(std::string& selectedFilePath) {
+
+                /* Popup window. */
+
     if (ImGui::BeginPopup("SelectablePopup")) {
+
         if (!selectedFilePath.empty()) {
+
             if (ImGui::MenuItem(ICON_PLAY "Run")) {
+
                 FileTree::openFile(selectedFilePath);
                 std::cout << "Opening: " << selectedFilePath << std::endl;
                 selectedFilePath = "";  // Clear selection after running
+
             }
+
         }
+
         ImGui::EndPopup();
     }
 }
 
+void DisplayQueryResults(const std::vector<std::filesystem::path>& filePaths, std::string& selectedFilePath) {
+
+    for (auto& path : filePaths) {
+        // Handle user interactions.
+        if (ImGui::Selectable(path.c_str())) {
+            // Store selected file path.
+            selectedFilePath = path;
+            ImGui::OpenPopup("SelectablePopup");
+        }
+    }
+
+}
+
 void SearchWindow::RenderSearchLogic() {
+
     static char searchQuery[256] = "";
     static std::vector<fs::path> result;
 
-    // Search bar
+    // Search bar.
     ImGui::InputText("Filename", searchQuery, IM_ARRAYSIZE(searchQuery));
 
-    static std::string selectedFilePath;  // Store selected file
+    // Store path of the user-selected file.
+    static std::string selectedFilePath;
 
     static int oldLen = 0;
     int currLen = strlen(searchQuery);
+
+    // Results of the filemap query.
     static std::vector<std::pair<std::string, std::vector<fs::path>>> cachedResults;
 
+
+    /* If there is a query, show the previous matching search results. */
     if (currLen > 0) {
         ImGui::Text("Results:");
         if (currLen == oldLen) {
             for (const auto& [file_name, file_path] : cachedResults) {
+
+                /* Display the query results. */
                 ImGui::Separator();
-                ImGui::Text(ICON_FILE_PLUS "Filename: %s", file_name.c_str());  // Show matching filename
-                for (auto& path : file_path) {
-                    if (ImGui::Selectable(path.c_str())) {
-                        selectedFilePath = path;  // Store selected file
-                        ImGui::OpenPopup("SelectablePopup");
-                    }
-                }
+                ImGui::Text(ICON_FILE_PLUS "Filename: %s", file_name.c_str());
+
+                DisplayQueryResults(file_path, selectedFilePath);
+
             }
-        } else {
+        }
+        /* If there are changes to the query, update the search results. */
+        else {
             oldLen = currLen;
+
+            // Clear previous query results.
             cachedResults.clear();
+
             auto& fileMap = FileTree::getFileMap();
             for (const auto& [filename, paths] : fileMap) {
+
                 if (filename.find(searchQuery) != std::string::npos) {
+                    // Update query results.
                     cachedResults.emplace_back(filename, paths);
-                    ImGui::Separator();
-                    ImGui::Text(ICON_FILE_PLUS "Filename: %s", filename.c_str());  // Show matching filename
-                    for (auto& path : paths) {
-                        if (ImGui::Selectable(path.c_str())) {
-                            selectedFilePath = path;  // Store selected file
-                            ImGui::OpenPopup("SelectablePopup");
-                        }
-                    }
                 }
+
             }
         }
     }
-
 
     // Render popup only if a file is selected
     popupWindowSelectable(selectedFilePath);

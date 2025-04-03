@@ -123,6 +123,7 @@ void RenderDeleteConformationPrompt(TreeNode& toDelete) {
 
 
 void TreeViewWindow::popupWindowNode(TreeNode &node) {
+
     if (ImGui::BeginPopup("TreeNodePopup")) {
         if (ImGui::MenuItem(ICON_PLAY "Run")) {
             FileTree::openFile(node.getPathString());
@@ -139,6 +140,7 @@ void TreeViewWindow::popupWindowNode(TreeNode &node) {
 
         ImGui::EndPopup();
     }
+
 }
 
 void TreeViewWindow::RenderDescendants(TreeNode &root) {

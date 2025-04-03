@@ -64,9 +64,11 @@ int main(int, char**)
     TreeNode root(dirent);
 
     FileTree::setRoot(root);
+    /* Start a 'mapper' thread that maps the filesystem.
+    'main' thread is used for everything else. This is essential because the 'main' thread is
+    rendering the loading screen in the rendering loop, while the 'mapper' thread is mapping the filesystem.
+    When the 'mapper' finishes its work, the loading screen stops rendering.*/
     std::thread mapper(FileTree::populateFileMap);
-    //FileTree::populateFileMap();
-
 
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -198,22 +200,27 @@ int main(int, char**)
         {
             // ImGui::ShowStyleEditor();
 
-            bool isFilesystemIndexed = FileTree::getFilesystemIndexStatus();
-
-            if (isFilesystemIndexed) {
-                bool isThemeChosen = ThemePrompt::getThemeChosenStatus();
-                if (!isThemeChosen) {
+            if (FileTree::getFilesystemIndexStatus()) {
+                // If the 'mapper' thread finished its work, the user is prompted to choose the theme.
+                if (!ThemePrompt::getThemeChosenStatus()) {
                     ThemePrompt::showThemePrompt();
                 }
+
                 else {
+                            /* Main Interface rendering. */
+
+                    // If the user chose the theme, the main interface is rendered.
                     IconViewWindow::showIconViewWindow();
 
                     TreeViewWindow::showTreeViewWindow();
 
                     SearchWindow::showSearchWindow();
                 }
+
             }
+
             else {
+                // If 'mapper' thread is still working, 'main' thread shows the Loading Screen.
                 LoadingWindow::showLoadingWindow();
             }
 

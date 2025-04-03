@@ -35,7 +35,7 @@ void DrawSpinner(float radius, int segments) {
         // Base angle plus time-based offset for continuous rotation.
         float angle = (static_cast<float>(i) / segments) * 2.0f * 3.14159265359f + time * speed;
 
-        // Optional: Create a fading effect across segments.
+        // Create a fading effect across segments.
         float alpha = 1.0f - (static_cast<float>(i) / segments);
         if (alpha < 0.1f)
             alpha = 0.1f;
@@ -44,11 +44,11 @@ void DrawSpinner(float radius, int segments) {
         ImVec2 start(center.x + cos(angle) * radius, center.y + sin(angle) * radius);
         ImVec2 end(center.x + cos(angle) * (radius * 0.6f), center.y + sin(angle) * (radius * 0.6f));
 
-        // Draw the spinner line (thicker line for a bigger spinner).
+        // Draw the spinner line.
         draw_list->AddLine(start, end, IM_COL32(255, 255, 255, static_cast<int>(alpha * 255)), 4.0f);
     }
 
-    // Optionally, draw a loading text below the spinner.
+    // Draw a loading text below the spinner.
     const char* loadingText = "Indexing the filesystem for fast searches...";
     ImVec2 textSize = ImGui::CalcTextSize(loadingText);
     draw_list->AddText(ImVec2(center.x - textSize.x * 0.5f, center.y + radius + 10.0f),
@@ -58,11 +58,9 @@ void DrawSpinner(float radius, int segments) {
 }
 
 void LoadingWindow::RenderLoading() {
-    bool isFileSystemIndexed = FileTree::getFilesystemIndexStatus();
-    if (isFileSystemIndexed) return; // Stop showing if loading is done
+    if (FileTree::getFilesystemIndexStatus()) return; // Stop showing if loading is done
 
     DrawSpinner(20.0f, 12);
-
 }
 
 void LoadingWindow::showLoadingWindow() {

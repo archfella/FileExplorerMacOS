@@ -14,7 +14,6 @@ namespace fs = std::filesystem;
 class TreeNode {
 public:
     TreeNode();
-    ~TreeNode();
 
     bool operator==(const TreeNode& other) const;
     explicit TreeNode(const std::filesystem::directory_entry& dirent);
@@ -26,7 +25,7 @@ public:
     void open();
     void close();
     bool isOpen() const;
-    void setInitializedStatus(const bool status);
+    void setInitializedStatus(bool status);
     bool getInitializedStatus() const;
     fs::directory_entry& getDirectoryEntry();
     void setDirectoryEntry(const fs::directory_entry& dirent);
@@ -34,11 +33,10 @@ public:
     std::string getName() const;
     std::vector<TreeNode>& getChildren();
     void initializeIcon();
-    bool isIconInitialized();
+    bool isIconInitialized() const;
     void setIcon(DraggableIcon* icon);
-    DraggableIcon* getIcon();
-    TreeNode* getParent();
-
+    DraggableIcon* getIcon() const;
+    TreeNode* getParent() const;
 
     // other
     void addChild(const TreeNode& child);

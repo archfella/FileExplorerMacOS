@@ -34,6 +34,7 @@ DraggableIcon::DraggableIcon(float x, float y, std::string &name, TreeNode& node
 }
 
 
+
 void DraggableIcon::setIconSize(float width, float height) {
     DraggableIcon::width = width;
     DraggableIcon::height = height;
