@@ -5,6 +5,8 @@
 * Cross-Platform File Explorer app developed using ImGui and OpenGL in C++.
 In the current moment app works only on **macOS**, but will soon be available for both Windows and Linux.
 
+---
+
 ## Table of Contents
 
 1. [Features](#features)
@@ -14,12 +16,15 @@ In the current moment app works only on **macOS**, but will soon be available fo
 5. [License](#license)
 6. [Sources](#sources)
 
+---
+
 ## Features
 
 * Tree-view of the filesystem.
 * Icon-view of the filesystem.
 * Fast filename searching with filesystem caching.
 * Basic file manipulation (copy, paste, run/open, delete).
+---
 
 ## Installation
 
@@ -33,14 +38,16 @@ Before building the project, ensure you have the following installed:
 * **GLFW**:
 
 On macOS, you can install GLFW using Homebrew:
-
-``` brew install glfw ```
+  ```bash
+  brew install glfw
+  ```
 
 * **GLEW**:
 
 Install GLEW using Homebrew:
-
-``` brew install glew ```
+  ``` bash
+  brew install glew
+  ```
 
 * **OpenGL**:
 
@@ -49,6 +56,8 @@ macOS provides OpenGL as part of its system libraries, so no additional installa
 * **ImGui**:
 
 The ImGui library is included in the project under the vendor/ImGui directory, so no extra installation is needed for it.
+
+---
 
 ## Usage
 
@@ -110,6 +119,8 @@ Here is a closer look of Icon GUI:
   
 ![path](readme_images/searchRun.png)
 
+---
+
 # Updates
 
 ### Tree View
@@ -124,16 +135,20 @@ Here is a closer look of Icon GUI:
 ### Backend
 - **Cross-platform** support.
 
-### Style
+---
 
 # License
 
 * Check out the LICENSE file.
 
+---
+
 # Sources
 
-* **Icons** used for Icon View window (./textures/icons) are downloaded for free from: https://www.flaticon.com
-* **Icon-font** used for Tree View window (./fonts/OpenFontIcons.ttf) is downloaded from this GitHub repo: https://github.com/traverseda/OpenFontIcons
+* **Icons** used for Icon View window (./textures/icons) are downloaded for free from [**here**](https://www.flaticon.com).
+* **Icon-font** used for Tree View window (*./fonts/OpenFontIcons.ttf*) is downloaded from [**this GitHub repo**](https://github.com/traverseda/OpenFontIcons).
+
+---
 
 # Patch Notes 22.2.2025.
 
@@ -156,6 +171,8 @@ Here is a closer look of Icon GUI:
 ![confirm2](readme_images/confirm2.png)
 
 - **Synchronization** of filesystem *cache state* (needed for searching).
+
+---
 
 # Patch Notes 6.3.2025.
 
