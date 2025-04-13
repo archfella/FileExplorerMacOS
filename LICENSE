@@ -25,7 +25,7 @@ SOFTWARE.
 This project includes the following third-party libraries:
 
 - **ImGui** (MIT License):
-  [https://github.com/ocornut/imgui](https://github.com/ocornut/imgui)
+  https://github.com/ocornut/imgui
 
   The MIT License (MIT)
 
@@ -50,7 +50,7 @@ This project includes the following third-party libraries:
   SOFTWARE.
 
 - **GLFW** (Zlib License):
-  [https://github.com/glfw/glfw](https://github.com/glfw/glfw)
+  https://github.com/glfw/glfw
 
   Copyright (c) 2002-2006 Marcus Geelnard
 
@@ -67,7 +67,7 @@ This project includes the following third-party libraries:
   This notice may not be removed or altered from any source distribution.
 
 - **GLEW** (MIT License):
-  [https://github.com/nigels-com/glew](https://github.com/nigels-com/glew)
+  https://github.com/nigels-com/glew
 
   The OpenGL Extension Wrangler Library
   Copyright (C) 2002-2007, Milan Ikits <milan ikits[]ieee org>
@@ -147,12 +147,12 @@ This project includes the following third-party libraries:
   OpenGL is provided by macOS and is governed by Apple's terms and conditions.
 
   For more information:
-  [https://developer.apple.com/metal/](https://developer.apple.com/metal/)
+  https://developer.apple.com/metal/
 
 ------------------------------------------------------------
 
-OpenFontIcons
-[https://github.com/traverseda/OpenFontIcons]
+- OpenFontIcons
+https://github.com/traverseda/OpenFontIcons
 
 MIT License
 
