@@ -30,7 +30,11 @@ void FileTree::populateFileMap() {
     try {
 
         // Populate the hashmap.
-        std::filesystem::directory_entry start_dir("/Users");
+#if (WIN32)
+        std::filesystem::directory_entry start_dir(R"(C:\test)");
+#else
+        std::filesystem::directory_entry dirent("/Users");
+#endif
         for (const auto& entry : std::filesystem::recursive_directory_iterator(start_dir)) {
 
             file_map[entry.path().filename().string()].push_back(entry.path());
@@ -39,6 +43,9 @@ void FileTree::populateFileMap() {
 
     } catch (const std::filesystem::filesystem_error& e) {
         std::cerr << "Error accessing entry: " << e.what() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Generic error accessing entry: " << e.what() << std::endl;
     }
 
     filesystemIndexed = true;
@@ -75,9 +82,13 @@ void FileTree::copyFile(TreeNode &dest) {
 }
 
 void FileTree::openFile(const std::string &filePath) {
+#if (WIN32)
+    system(filePath.c_str());
+#else
     /* Opens the file in a default program. */
     std::string command = "open \"" + filePath + "\"";
     system(command.c_str());
+#endif
 }
 
 void FileTree::deleteFile(TreeNode& toDelete) {

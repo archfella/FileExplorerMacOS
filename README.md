@@ -3,7 +3,7 @@
 ## Description
 
 * Cross-Platform File Explorer app developed using ImGui and OpenGL in C++.
-In the current moment app works only on **macOS**, but will soon be available for both Windows and Linux.
+In the current moment app works only on **macOS**, but will soon be available for both Windows (see README_Windows.md) and Linux.
 
 ---
 

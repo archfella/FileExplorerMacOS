@@ -75,7 +75,7 @@ bool DraggableIcon::isFileOpened() {
     return fileOpened;
 }
 
-bool DraggableIcon::setFileOpenedStatus(bool status) {
+void DraggableIcon::setFileOpenedStatus(bool status) {
     fileOpened = status;
 }
 

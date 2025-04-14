@@ -7,6 +7,7 @@
 # CMake build directories
 /cmake-build-debug/
 /cmake-build-release/
+/build
 
 # Build artifacts (object files, executables, libraries)
 *.o

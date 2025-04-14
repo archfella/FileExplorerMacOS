@@ -20,7 +20,7 @@ public:
     static float getHeight();
     bool renderIconWithName(bool render);
     static bool isFileOpened();
-    static bool setFileOpenedStatus(bool status);
+    static void setFileOpenedStatus(bool status);
 
 private:
     bool renderImageButton();

@@ -59,8 +59,11 @@ static void glfw_error_callback(int error, const char* description)
 // Main code
 int main(int, char**)
 {
-
+#if (WIN32)
+    std::filesystem::directory_entry dirent(R"(C:\test)");
+#else
     std::filesystem::directory_entry dirent("/Users");
+#endif
     TreeNode root(dirent);
 
     FileTree::setRoot(root);
@@ -250,6 +253,7 @@ int main(int, char**)
     glfwDestroyWindow(window);
     glfwTerminate();
 
+    mapper.join();
 
     return 0;
 }

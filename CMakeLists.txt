@@ -47,6 +47,12 @@ target_include_directories(imgui PUBLIC ${IMGUI_DIR}/backends)
 # Include directories for GLFW, needed by ImGui backend
 target_include_directories(imgui PRIVATE ${GLFW_DIR}/include)
 
+# GLFW
+add_library(GLFW_Intergrated INTERFACE)
+if (WIN32)
+find_package(glfw3 CONFIG REQUIRED)
+target_link_libraries(GLFW_Intergrated INTERFACE glfw)
+else ()
 # Add ImGui and GLFW
     # This tells CMake to:
         # 1. Enter the GLFW directory.
@@ -54,16 +60,37 @@ target_include_directories(imgui PRIVATE ${GLFW_DIR}/include)
         # 3. Build GLFW as part of our project.
     # *Find GLFW - This automatically finds the installed GLFW3 package, as it is installed system-wide (via: brew install glfw)
 find_package(GLFW3 REQUIRED)
+target_link_libraries(GLFW_Intergrated INTERFACE glfw)
+endif ()
 
+# GLEW
+add_library(GLEW_Intergrated INTERFACE)
+if (WIN32)
+find_package(GLEW REQUIRED)
+target_link_libraries(GLEW_Intergrated INTERFACE GLEW::GLEW)
+else ()
 # Add GLEW for OpenGL function loading
 find_library(GLEW_LIBRARIES NAMES GLEW REQUIRED)
-include_directories(${GLEW_INCLUDE_DIRS})
+target_include_directories(GLEW_Intergrated INTERFACE ${GLEW_INCLUDE_DIRS})
+target_link_libraries(GLEW_Intergrated INTERFACE ${GLEW_LIBRARIES})
+endif ()
 
+# OpenGL
+add_library(OpenGL_Intergrated INTERFACE)
+if (WIN32)
+find_package(OpenGL REQUIRED)
+target_link_libraries(OpenGL_Intergrated INTERFACE ${OPENGL_gl_LIBRARY})
+else ()
 # Link OpenGL (since it's required for your project)
 find_library(OpenGL_LIBRARY OpenGL)
+target_link_libraries(OpenGL_Intergrated INTERFACE ${OpenGL_LIBRARY})
+endif ()
 
-# Link the libraries (ImGui, GLFW, OpenGL and GLEW)
-target_link_libraries(FileExplorerMacOS PRIVATE imgui glfw ${OpenGL_LIBRARY} ${GLEW_LIBRARIES})
+target_link_libraries(imgui PUBLIC GLFW_Intergrated)
+target_link_libraries(imgui PUBLIC OpenGL_Intergrated)
+target_link_libraries(imgui PUBLIC GLEW_Intergrated)
+
+target_link_libraries(FileExplorerMacOS PRIVATE imgui)
 
 # Include directories for FileExplorerMacOS
 target_include_directories(FileExplorerMacOS PRIVATE ${GLFW_DIR}/include)
