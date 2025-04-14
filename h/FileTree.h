@@ -5,6 +5,8 @@
 #ifndef TREE_H
 #define TREE_H
 
+#include <unordered_map>
+
 #include "TreeNode.h"
 
 class FileTree {

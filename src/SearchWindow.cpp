@@ -61,9 +61,9 @@ void DisplayQueryResults(const std::vector<std::filesystem::path>& filePaths, st
 
     for (auto& path : filePaths) {
         // Handle user interactions.
-        if (ImGui::Selectable(path.c_str())) {
+        if (ImGui::Selectable(path.string().c_str())) {
             // Store selected file path.
-            selectedFilePath = path;
+            selectedFilePath = path.string();
             ImGui::OpenPopup("SelectablePopup");
         }
     }

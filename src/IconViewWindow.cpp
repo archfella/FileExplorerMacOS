@@ -16,7 +16,11 @@ std::stack<TreeNode*> IconViewWindow::nodeStack;
 bool IconViewWindow::goBack = false;
 std::string IconViewWindow::iconPath;
 bool IconViewWindow::lightTheme = true;
+#if (WIN32)
+std::string IconViewWindow::currentPath = R"(C:\test)";
+#else
 std::string IconViewWindow::currentPath = "/Users";
+#endif
 std::vector<std::string> IconViewWindow::prevPaths;
 
 void IconViewWindow::BeginRender() {
@@ -195,7 +199,11 @@ void IconViewWindow::Render() {
     // If the root icon is clicked, we push it onto the 'nodeStack'.
     if (clicked) {
         nodeStack.push(&root);
+#if (WIN32)
+        prevPaths.emplace_back(R"(C:\test)");
+#else
         prevPaths.emplace_back("/Users");
+#endif
         clicked = false;
     };
 }
