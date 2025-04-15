@@ -5,6 +5,9 @@
 * Cross-Platform File Explorer app developed using ImGui and OpenGL in C++.
 In the current moment app works only on **macOS**, but will soon be available for both Windows and Linux.
 
+<!-- BEGIN YOUTUBE-CARDS -->
+[![I made a FAST File Explorer in C++](https://ytcards.demolab.com/?id=Jk4vkr6vP38&title=I+made+a+FAST+File+Explorer+in+C++&lang=en&timestamp=1744581600&background_color=%230d1117&title_color=%23ffffff&stats_color=%23dedede&max_title_lines=1&width=250&border_radius=5&duration=261 "I made a FAST File Explorer in C++")](https://www.youtube.com/watch?v=Jk4vkr6vP38&t=50s)
+<!-- END YOUTUBE-CARDS -->
 ---
 
 ## Table of Contents
